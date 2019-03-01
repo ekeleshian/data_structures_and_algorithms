@@ -788,6 +788,27 @@ def find_ops(expression, sym):
 	return expression
 
 
+def get_answer(l,r,s):
+	if l.find('.') == -1:
+		l = int(l)
+	else:
+		l = float(l)
+	if r.find('.') == -1:
+		r = int(r)
+	else:
+		r = float(r)
+	if s == '*':
+		return l*r
+	elif s == '+':
+		return l+r
+	elif s == '/':
+		return l/r
+	elif s == '-':
+		return l - r
+	else:
+		print('no valid symbols found')
+
+
 
 def find_nums(expr, sym, idx):
 	lft_num= []
@@ -816,8 +837,8 @@ def find_nums(expr, sym, idx):
 	lft_num.reverse()
 	lft_num = ''.join(lft_num)
 	rgt_num = ''.join(rgt_num)
-	answer = eval(lft_num+sym+rgt_num)
-	set_trace()
+	answer = get_answer(lft_num, rgt_num, sym)
+
 	if bckwrd == 0 and frwrd != len(expr)-1:
 		expr = str(answer) + expr[frwrd:]
 	elif bckwrd != 0 and frwrd == len(expr) - 1:
@@ -826,7 +847,7 @@ def find_nums(expr, sym, idx):
 		expr = expr[:bckwrd+1]+str(answer)+expr[frwrd:]
 	else:
 		expr = str(answer)
-	set_trace()
+	# set_trace()
 	return expr
 
 
@@ -852,10 +873,6 @@ def handheld_calculator():
 
 	print(expr)
 
-
-
-
-	# return a
 
 handheld_calculator()
 
