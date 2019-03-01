@@ -778,6 +778,7 @@ the basic arithmetic operations and a reset/clear operation.
 
 def find_ops(expression, sym):
 	idx = -1
+
 	while True:
 		idx = expression.find(sym, idx+1)
 		if idx == -1:
@@ -817,6 +818,7 @@ def find_nums(expr, sym, idx):
 	num = ''
 	bckwrd = idx -1
 	frwrd = idx +1
+
 	while True:
 		if expr[bckwrd] not in symbols:
 			lft_num.append(expr[bckwrd])
@@ -825,6 +827,7 @@ def find_nums(expr, sym, idx):
 			bckwrd -= 1
 		else:
 			break
+
 	while True:
 		if expr[frwrd] not in symbols:
 			rgt_num.append(expr[frwrd])
@@ -853,6 +856,7 @@ def find_nums(expr, sym, idx):
 
 def handheld_calculator():
 	expression = []
+
 	while True:
 		a = input().strip()
 		if a == '':
@@ -860,21 +864,19 @@ def handheld_calculator():
 		expression.append(a)
 
 	expr = expression[0]
-	primary_idx = []
-	secondary_idx = []
-
 	primary_ops = ['*', '/']
 	secondary_ops = ['+', '-']
+
 	for i in primary_ops:
 		expr = find_ops(expr, i)
-		# set_trace()
+
 	for i in secondary_ops:
 		expr = find_ops(expr, i)
 
 	print(expr)
 
 
-handheld_calculator()
+# handheld_calculator()
 
 # P-1.34
 """
@@ -884,7 +886,32 @@ following sentence one hundred times: “I will never spam my friends
 again.” Your program should number each of the sentences and it should
 make eight different random-looking typos.
 """
+from random import choice
+def punishment():
+	results = []
+	seq = range(100)
+	for i in seq:
+		results.append(f"{i+1}.  I will never spam my friends again.")
+	rand_typos = {
+	'friends': 'freinds',
+	'never': 'nver',
+	'again': 'agian', 
+	'I': 'i',
+	'again.': 'again', 
+	'will': 'wil',
+	'spam': 'spamm',
+	'I will': 'ill'
+	}
+	idxs = []
+	for typo in rand_typos:
+		idx = choice(seq)
+		idxs.append(idx)
+		results[idx] = results[idx].replace(typo, rand_typos[typo])
 
+	print(results)
+	print(idxs)
+
+# punishment()
 
 # P-1.35
 """
@@ -896,6 +923,24 @@ this paradox by a series of experiments on randomly generated birthdays,
 which test this paradox for n = 5, 10, 15, 20, . . . , 100.
 """
 
+def generate_birthdays(n):
+	birthdays = []
+	month = 0
+	day = 0
+	for i in range(n):
+		month = randint(1 ,12)
+		if month in [1,3,5,7,8, 10, 12]:
+			day = randint(1, 31)
+		elif month in [4, 6, 9, 11]:
+			day = randint(1, 30)
+		else:
+			day = randint(1, 28)
+		birthdays.append(str(month) + '/' + str(day))
+	unique_birthdays = set(birthdays)
+	return f"There are {len(birthdays) - len(unique_birthdays)} overlapping birthdays when n = {n}"
+
+# for i in range(5, 101, 5):
+# 	print(generate_birthdays(i))
 
 # P-1.36
 """
@@ -904,3 +949,24 @@ space, and outputs how many times each word appears in the list. You
 need not worry about efficiency at this point, however, as this topic is
 something that will be addressed later in this book.
 """
+
+def word_counter():
+	words = []
+	while True:
+		a = input()
+		if a == '':
+			break
+		words.append(a)
+	words = words[0]
+	words = words.split(' ')
+
+	seen = {}
+	for w in words:
+		if w in seen:
+			seen[w] += 1
+		else:
+			seen[w] = 1
+
+	print(seen)
+
+word_counter()
