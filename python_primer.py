@@ -762,7 +762,7 @@ def calculator():
 		a = input().strip()
 		if a == '=':
 			break
-	expression.append(a)
+		expression.append(a)
 	return eval(''.join(expression))
 
 # print(calculator())
@@ -776,6 +776,88 @@ eration is performed. Minimally, your calculator should be able to process
 the basic arithmetic operations and a reset/clear operation.
 """
 
+def find_ops(expression, sym):
+	idx = -1
+	while True:
+		idx = expression.find(sym, idx+1)
+		if idx == -1:
+			break
+		else:
+			expression = find_nums(expression, sym, idx)
+
+	return expression
+
+
+
+def find_nums(expr, sym, idx):
+	lft_num= []
+	rgt_num = []
+	symbols = ['*', '+', '-', '/']
+	num = ''
+	bckwrd = idx -1
+	frwrd = idx +1
+	while True:
+		if expr[bckwrd] not in symbols:
+			lft_num.append(expr[bckwrd])
+			if bckwrd == 0:
+				break
+			bckwrd -= 1
+		else:
+			break
+	while True:
+		if expr[frwrd] not in symbols:
+			rgt_num.append(expr[frwrd])
+			if frwrd == len(expr) - 1:
+				break
+			frwrd += 1
+		else:
+			break
+
+	lft_num.reverse()
+	lft_num = ''.join(lft_num)
+	rgt_num = ''.join(rgt_num)
+	answer = eval(lft_num+sym+rgt_num)
+	set_trace()
+	if bckwrd == 0 and frwrd != len(expr)-1:
+		expr = str(answer) + expr[frwrd:]
+	elif bckwrd != 0 and frwrd == len(expr) - 1:
+		expr = expr[:bckwrd+1] + str(answer)
+	elif bckwrd != 0 and frwrd != len(expr) - 1:
+		expr = expr[:bckwrd+1]+str(answer)+expr[frwrd:]
+	else:
+		expr = str(answer)
+	set_trace()
+	return expr
+
+
+def handheld_calculator():
+	expression = []
+	while True:
+		a = input().strip()
+		if a == '':
+			break
+		expression.append(a)
+
+	expr = expression[0]
+	primary_idx = []
+	secondary_idx = []
+
+	primary_ops = ['*', '/']
+	secondary_ops = ['+', '-']
+	for i in primary_ops:
+		expr = find_ops(expr, i)
+		# set_trace()
+	for i in secondary_ops:
+		expr = find_ops(expr, i)
+
+	print(expr)
+
+
+
+
+	# return a
+
+handheld_calculator()
 
 # P-1.34
 """
