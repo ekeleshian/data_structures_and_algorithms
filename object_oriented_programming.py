@@ -1036,7 +1036,269 @@ of that type of animal, which is placed in a random empty (i.e., previously
 None) location in the list. If a bear and a fish collide, however, then the
 fish dies (i.e., it disappears).
 """
+import random
+class Bear:
+	def __init__(self, river):
+		while True:
+			r = random.randint(0, len(river)-1)
+			if river[r] == None:
+				break
+		river[r] = self
+		self._pos = r
+		self._river = river
+		# self._right = r + 1
+		# self._left = r - 1
 
+	def consequence(self, rand_act):
+		curr_pos = self._pos
+		if rand_act == 'move_right':
+			r_idx = curr_pos + 1
+			test = self._river[r_idx]
+			if test == None:
+				self._pos += 1
+				self._river[curr_pos] = None
+				self._river[r_idx] = self
+			elif isinstance(test, Fish):
+				self._pos += 1
+				self._river[curr_pos] = None
+				self._river[r_idx] = self
+			elif isinstance(test, Bear):
+				cub = Bear(self._river)
+		if rand_act == 'move_left':
+			l_idx = curr_pos - 1
+			test = self._river[l_idx]
+			if test == None:
+				self._pos -= 1
+				self._river[curr_pos] = None
+				self._river[l_idx] = self
+			elif isinstance(test, Fish):
+				self._pos -= 1
+				self._river[curr_pos] = None
+				self._river[l_idx] = self
+				print(f'{type(self)} hunts')
+			elif isinstance(test, Bear):
+				cub = Bear(self._river)
+				print('new cub is born!')
+		if rand_act == 'do_nothing':
+			pass
+
+	def respond_to_request(self):
+		actions = {'move_right': 1, 'move_left':2, 'do_nothing': None}
+		rand_act = random.sample(list(actions.keys()),1)[0]
+		print(f'{type(self)} performed {rand_act} at {self._pos}')
+		result = self.consequence(rand_act)
+		return self._river
+
+
+
+class Fish:
+	def __init__(self, river):
+		while True:
+			r = random.randint(0, len(river)-1)
+			if river[r] == None:
+				break
+		river[r] = self
+		self._pos = r
+		self._river = river
+
+	def consequence(self, rand_act):
+		curr_pos = self._pos
+		if rand_act == 'move_right':
+			r_idx = curr_pos + 1
+			test = self._river[r_idx]
+			if test == None:
+				self._pos += 1
+				self._river[curr_pos] = None
+				self._river[r_idx] = self
+			elif isinstance(test, Fish):
+				Fish(self._river)
+				print('new fish is born!')
+			elif isinstance(test, Bear):
+				self._river[curr_pos] = None
+				print(f'{type(self)} has died.')
+
+		if rand_act == 'move_left':
+			l_idx = curr_pos - 1
+			test = self._river[l_idx]
+			if test == None:
+				self._pos -= 1
+				self._river[curr_pos] = None
+				self._river[l_idx] = self
+			elif isinstance(test, Fish):
+				Fish(self._river)
+			elif isinstance(test, Bear):
+				self._river[curr_pos] = None
+
+		if rand_act == 'do_nothing':
+			pass
+
+	def respond_to_request(self):
+		actions = {'move_right': 1, 'move_left':2, 'do_nothing': None}
+		rand_act = random.sample(list(actions.keys()),1)[0]
+		print(f'{type(self)} performed {rand_act} at {self._pos}')
+		result = self.consequence(rand_act)
+		return self._river
+
+
+
+# river = [None]*1000
+# bear_one = Bear(river)
+# fish_one = Fish(river)
+# bear_two = Bear(river)
+# fish_two = Fish(river)
+# counter = 0
+# while True:
+# 	bear_one.respond_to_request()
+# 	fish_one.respond_to_request()
+# 	bear_two.respond_to_request()
+# 	river_two = fish_two.respond_to_request()
+# 	counter +=1
+# 	if counter > 1000:
+# 		break
+
+# # print(river_two)
+# print(river)
+
+#P-2.37
+"""
+Write a simulator, as in the previous project, but add a Boolean gender
+field and a floating-point strength field to each animal, using an Animal
+class as a base class. If two animals of the same type try to collide, then
+they only create a new instance of that type of animal if they are of differ-
+ent genders. Otherwise, if two animals of the same type and gender try to
+collide, then only the one of larger strength survives.
+"""
+class Animal:
+	def __init__(self, river, gender, strength):
+		k = 0
+		while True:
+			r = random.randint(0, len(river)-1)
+			if not river[r]:
+				break
+			k += 1
+			if k >= int(0.8*len(river)):
+				river += [None]*100
+
+		river[r] = self
+		self._pos = r
+		self._river = river
+		self._gender = gender
+		self._strength = strength
+
+
+	def move(self, sgn):
+		curr_pos = self._pos
+		if sgn == 'move_right':
+			r_idx = curr_pos + 1
+			self._pos = r_idx
+			self._river[self._pos] = self
+			self._river[curr_pos] = None
+			return 200
+
+		if sgn == 'move_left':
+			l_idx = curr_pos - 1
+			self._pos = l_idx
+			self._river[self._pos] = self
+			self._river[curr_pos] = None
+			return 200
+		return -1
+
+
+
+	def consequence(self, action):
+		curr_pos = self._pos
+		print(curr_pos)
+		do_more = True
+		if action == 'move_right':
+			r_idx = self._pos + 1
+			elem = self._river[r_idx]
+			if elem is None:
+				return self.move(action)
+			else:
+				return elem
+		if action == 'move_left':
+			l_idx = self._pos - 1
+			elem = self._river[l_idx]
+			if elem is None:
+				return self.move(action)
+			else:
+				return elem
+		else:
+			return 200
+
+
+
+	def respond_to_request(self):
+		actions = ['move_left', 'move_right', 'do_nothing']
+		rand_act = random.sample(actions,1)[0]
+		print(f'{type(self)} performed {rand_act} at {self._pos}')
+		result = self.consequence(rand_act)
+
+
+
+class Bear(Animal):
+	def __init__(self, river, gender, strength):
+		super().__init__(river, gender, strength)
+
+	def consequence(self, action):
+		result = super().consequence(action)
+		if result == 200:
+			pass
+		elif isinstance(elem, Bear):
+			if elem._gender != self._gender:
+				cub = Bear(self._river, random.sample([True, False],1)[0], float(random.randint(0, 25)))
+			else:
+				if self._strength > elem._strength:
+					return self.move(action)
+				else:
+					self._river[self._pos] = None
+		elif elem._strength > self._strength:
+			self._river[self._pos] = None
+		else:
+			self.move(action)
+
+
+
+# river = [None]*100
+# b = Bear(river, True, 12.9)
+# b.respond_to_request()
+
+#P - 2.38
+"""
+Write a Python program that simulates a system that supports the func-
+tions of an e-book reader. You should include methods for users of your
+system to “buy” new books, view their list of purchased books, and read
+their purchased books. Your system should use actual books, which have
+expired copyrights and are available on the Internet, to populate your set
+of available books for users of your system to “purchase” and read.
+"""
+books = {'East of Eden': 16.99, "Gilead": 12.99}
+
+def load_data(title):
+	#suppose you make get request to remote server that has stored data
+	#of the book
+	pass
+
+class Book:
+	def __init__(self, title):
+		self._title = title
+		self._data = load_data(title)
+
+
+
+class User:
+	def __init__(self, name, acnt):
+		self._name = name
+		self._acnt = acnt
+		self._shelf = []
+		self._balance = 0
+
+	def buy_book(self, book):
+		self._balance += books[book]
+		self._shelf += Book(book)
+
+	def read_book(self, book):
+		book = self._shelf[self._shelf.find(book)]
 
 
 
